@@ -35,7 +35,7 @@ def bci_direction():
             app.logger.warning(f"未知方向: {direction_str}")
             return jsonify({"error": "invalid direction"}), 400
 
-        app.logger.info(f"✅ 收到来自 MATLAB 的方向: {direction_str} → action='{action}'")
+        app.logger.info(f"[OK] 收到来自 MATLAB 的方向: {direction_str} → action='{action}'")
 
         # 直接发送到 ESP32
         try:
@@ -58,18 +58,16 @@ def bci_direction():
                     "esp32_error": error_msg
                 }), 500
         except requests.exceptions.RequestException as e:
-            app.logger.error(f"❌ 无法连接 ESP32: {e}")
+            app.logger.error(f"[Error] 无法连接 ESP32: {e}")
             return jsonify({"error": "ESP32 unreachable"}), 500
 
     except Exception as e:
-        app.logger.error(f"❌ 解析请求失败: {e}")
+        app.logger.error(f"[Error] 解析请求失败: {e}")
         return jsonify({"error": "invalid request"}), 400
 
 
 @app.route('/control', methods=['POST'])
-def control():
-    """用于网页或其它客户端直接发送控制指令"""
-    data = request.get_json()
+def control():    data = request.get_json()
     action = data.get('action')
     valid_actions = {'forward', 'backward', 'left', 'right', 'stop'}
     if action not in valid_actions:
@@ -91,10 +89,10 @@ def control():
 def notify():
     try:
         data = request.get_json(force=True)
-        print("✅ 收到小车就绪通知:", data)
+        print("[OK] 收到小车就绪通知:", data)
         return {"status": "acknowledged"}, 200
     except Exception as e:
-        print("❌ 解析通知失败:", e)
+        print("[Error] 解析通知失败:", e)
         return {"error": "invalid json"}, 400
 
 
