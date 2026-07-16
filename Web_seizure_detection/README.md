@@ -1,2 +1,0 @@
-# Website
-seizure_detection
